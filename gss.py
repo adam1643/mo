@@ -2,10 +2,14 @@ import math
 
 
 class GoldenSectionSearch:
-    def __init__(self, function):
-        self.f = function
+    def __init__(self):
+        self.f = None
         self.a = None
         self.b = None
+
+    def set_function(self, function):
+        """Sets reference to function that is to be minimized"""
+        self.f = function
 
     def set_parameters(self, a, b):
         """Sets parameters for range values"""

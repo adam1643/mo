@@ -3,6 +3,6 @@ from msd import SteepestDescentMethod
 from gss import GoldenSectionSearch
 
 parser = Parser()
-gss = GoldenSectionSearch(parser.function)
+gss = GoldenSectionSearch()
 msd = SteepestDescentMethod(parser.function, gss)
 
