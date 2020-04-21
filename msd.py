@@ -1,6 +1,6 @@
 import math
 from gss import GoldenSectionSearch
-from parser import Parser
+from function_handler import FunctionHandler
 
 
 class SteepestDescentMethod:

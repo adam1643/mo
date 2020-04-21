@@ -2,7 +2,7 @@ import math
 import ast
 
 
-class Parser:
+class FunctionHandler:
     def __init__(self):
         self.direction = None
 

@@ -1,8 +1,8 @@
-from parser import Parser
+from function_handler import FunctionHandler
 from msd import SteepestDescentMethod
 from gss import GoldenSectionSearch
 
-parser = Parser()
+f_handler = FunctionHandler()
 gss = GoldenSectionSearch()
-msd = SteepestDescentMethod(parser.function, gss)
+msd = SteepestDescentMethod(f_handler.function, gss)
 
