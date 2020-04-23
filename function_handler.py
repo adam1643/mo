@@ -1,5 +1,5 @@
 import math
-from math import sin, cos, tan, e, pi, exp, log, log2, log10
+from math import sin, cos, tan, e, pi, exp, log, log2, log10, sqrt
 import ast
 import parser
 
@@ -11,9 +11,19 @@ class FunctionHandler:
         self.f = None
 
     def parse_function(self, str_function):
-        formula = str_function
-        formula = formula.replace('^', '**')
-        print(formula)
+        # replace exponents
+        formula = str_function.replace('^', '**')
+
+        # add multiplication (*) between numbers and arguments
+        formula_as_list = list(formula)
+        inserted_stars = 0
+        for i in range(len(formula)-1):
+            if formula[i] in ['x', 'y'] + [str(i) for i in range(0, 10)] and formula[i+1] in ['x', 'y']:
+                formula_as_list.insert(inserted_stars + i + 1, '*')
+                inserted_stars += 1
+        formula = ''.join(formula_as_list)
+
+        print('Parsed function: f(x) =', formula)
         self.f = parser.expr(formula).compile()
 
     def set_direction(self, vector):
@@ -31,6 +41,6 @@ class FunctionHandler:
 
 
 fh = FunctionHandler()
-fh.parse_function("math.sin(x)*x^2")
+fh.parse_function("2x+sin(x)*x^2+3y")
 a = fh.function((3, 4))
 print(a)
