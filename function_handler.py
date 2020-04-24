@@ -2,6 +2,7 @@ import math
 from math import sin, cos, tan, e, pi, exp, log, log2, log10, sqrt
 import ast
 import parser
+import numpy as np
 
 
 class FunctionHandler:
@@ -38,6 +39,22 @@ class FunctionHandler:
         x1 = value
         x2 = x1 * self.direction[0] / self.direction[1]
         return self.function((x1, x2))
+
+    def set_mesh_ranges(self, x1_range, x2_range):
+        self.xlist = np.linspace(x1_range[0], x1_range[1], 300)
+        self.ylist = np.linspace(x2_range[0], x2_range[1], 400)
+
+    def create_mesh(self):
+        X, Y = np.meshgrid(self.xlist, self.ylist)
+
+        values = []
+        for a, b in zip(X, Y):
+            values.append([])
+            for x, y in zip(a, b):
+                z = self.function((x, y))
+                values[-1].append(z)
+
+        return X, Y, values
 
 
 fh = FunctionHandler()

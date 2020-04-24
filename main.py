@@ -1,26 +1,23 @@
-import numpy as np
-import math
 from function_handler import FunctionHandler
 from msd import SteepestDescentMethod
 from gss import GoldenSectionSearch
-from gui import GUI
+from pyqt_gui import FunctionOptimizer, QApplication
 
-
-parser = FunctionHandler()
-gui = GUI(parser)
 
 # example function
 func = "math.sin(x ** 2 + 3 * y ** 2) / (0.1 + math.sqrt(x ** 2 + y ** 2) ** 2) + (x ** 2 + 5 * y ** 2) * (math.exp(1 - math.sqrt(x ** 2 + y ** 2) ** 2) / 2)"
+
+parser = FunctionHandler()
 parser.parse_function(func)
+parser.set_mesh_ranges((-10.0, 10.0), (-5.0, 5.0))
 
-# prepare arguments
-xlist = np.linspace(-10.0, 10.0, 300)
-ylist = np.linspace(-5.0, 5.0, 400)
-X, Y = np.meshgrid(xlist, ylist)
+if __name__ == '__main__':
+    app = QApplication([])
+    gui = FunctionOptimizer(parser=parser)
 
-# draw example plot
-gui.set_plot_data(X, Y, 20)
-gui.draw_plot()
+    gui.text_edit.setPlainText(func)
+    gui.fig_canvas.set_data(parser.create_mesh())
+    gui.update_figure()
 
-# enter main loop of GUI
-gui.root.mainloop()
+    gui.show()
+    app.exec_()
