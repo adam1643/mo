@@ -40,7 +40,7 @@ class Plot3D(FigureCanvas):
 
         if self.plot_type == 'contourf':
             cp = plt.contourf(self.x, self.y, self.z, levels=self.levels)
-            plt.colorbar(cp)
+            # plt.colorbar(cp)
         else:
             cp = plt.contour(self.x, self.y, self.z, colors='black', levels=self.levels, linewidths=0.1)
 
@@ -59,7 +59,7 @@ class FunctionOptimizer(QDialog):
         self.create_plot_box()
 
         main_layout = QGridLayout()
-        fig = plt.figure(dpi=100)
+        fig = plt.figure(dpi=140)
 
         self.fig_canvas = Plot3D(fig)
         main_layout.addWidget(self.fig_canvas, 0, 0, 2, 1)
@@ -74,9 +74,34 @@ class FunctionOptimizer(QDialog):
         button = QPushButton("Parsuj")
         button.clicked.connect(lambda: self.update_function())
 
+        start_point_layout = QGridLayout()
+        x1, x2 = QLineEdit(), QLineEdit()
+        start_point_layout.addWidget(x1, 0, 0)
+        start_point_layout.addWidget(x2, 0, 1)
+        start_point_box = QGroupBox("Punkt startowy")
+        start_point_box.setLayout(start_point_layout)
+
+        main_precision_layout = QGridLayout()
+        p1 = QLineEdit()
+        main_precision_layout.addWidget(p1)
+        main_precision_box = QGroupBox("Precyzja")
+        main_precision_box.setLayout(main_precision_layout)
+
+        dir_precision_layout = QGridLayout()
+        p2 = QLineEdit()
+        dir_precision_layout.addWidget(p2)
+        dir_precision_box = QGroupBox("Pr.kier.")
+        dir_precision_box.setLayout(dir_precision_layout)
+
+        algorithm_details = QHBoxLayout()
+        algorithm_details.addWidget(start_point_box)
+        algorithm_details.addWidget(main_precision_box)
+        algorithm_details.addWidget(dir_precision_box)
+
         layout = QVBoxLayout()
         layout.addWidget(self.text_edit)
         layout.addWidget(button)
+        layout.addLayout(algorithm_details)
 
         self.parser_group_box.setLayout(layout)
 
@@ -104,7 +129,7 @@ class FunctionOptimizer(QDialog):
         type_group.setLayout(type_group_layout)
 
         # set plot details
-        self.x1_start_range, self.x1_end_range, self.x2_start_range, self.x2_end_range = QLineEdit('-10'), QLineEdit('10'), QLineEdit('-10'), QLineEdit('10')
+        self.x1_start_range, self.x1_end_range, self.x2_start_range, self.x2_end_range = QLineEdit('-10'), QLineEdit('10'), QLineEdit('-5'), QLineEdit('5')
         lab1, lab2 = QLabel("-"), QLabel("-")
 
         # X ranges
@@ -144,8 +169,12 @@ class FunctionOptimizer(QDialog):
         self.plot_group_box.setLayout(grid_layout)
 
     def update_range(self):
-        x1 = (float(self.x1_start_range.text()), float(self.x1_end_range.text()))
-        x2 = (float(self.x2_start_range.text()), float(self.x2_end_range.text()))
+        try:
+            x1 = (float(self.x1_start_range.text()), float(self.x1_end_range.text()))
+            x2 = (float(self.x2_start_range.text()), float(self.x2_end_range.text()))
+        except ValueError:
+            print("Bad range values!")
+            return
         self.parser.set_mesh_ranges(x1, x2)
         self.fig_canvas.set_data(self.parser.create_mesh())
         self.update_figure()
