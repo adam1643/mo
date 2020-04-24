@@ -5,7 +5,7 @@ from pyqt_gui import FunctionOptimizer, QApplication
 
 
 # example function
-func = "math.sin(x ** 2 + 3 * y ** 2) / (0.1 + math.sqrt(x ** 2 + y ** 2) ** 2) + (x ** 2 + 5 * y ** 2) * (math.exp(1 - math.sqrt(x ** 2 + y ** 2) ** 2) / 2)"
+func = "sin(x ^ 2 + 3 * y ^ 2) / (0.1 + sqrt(x ^ 2 + y ** 2) ** 2) + (x ^ 2 + 5 * y ^ 2) * (exp(1 - sqrt(x ** 2 + y ** 2) ^ 2) / 2)"
 
 parser = FunctionHandler()
 parser.parse_function(func)
