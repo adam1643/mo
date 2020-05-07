@@ -26,6 +26,7 @@ class SteepestDescentMethod:
     def set_parameters(self, start_value, precision):
         """Sets method parameters for starting position of first iteration and searched precision"""
         self.start_value = start_value
+        self.steps = []
         self.steps.append(start_value)
         self.precision = precision
 
@@ -51,6 +52,9 @@ class SteepestDescentMethod:
 
     def compute(self):
         """Main computing method"""
+        self.steps = []
+        self.steps.append(self.start_value)
+
         x = self.start_value
         prev_x = None
 
