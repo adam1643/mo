@@ -15,6 +15,8 @@ class Plot3D(FigureCanvas):
         self.plot_type = 'contour'
         self.levels = 20
 
+        self.steps_x, self.steps_y = None, None
+
     def set_data(self, data):
         self.x = data[0]
         self.y = data[1]
@@ -23,6 +25,11 @@ class Plot3D(FigureCanvas):
     def set_levels(self, value):
         self.levels = value
         self.update_canvas()
+
+    def set_points(self, points):
+        self.steps_x = [p[0] for p in points]
+        self.steps_y = [p[1] for p in points]
+
 
     def set_plot_type(self, plot_type):
         if plot_type is True:
@@ -44,16 +51,24 @@ class Plot3D(FigureCanvas):
         else:
             cp = plt.contour(self.x, self.y, self.z, colors='black', levels=self.levels, linewidths=0.1)
 
+        scat = None
+        if self.steps_x is not None and self.steps_y is not None:
+            print(self.steps_x, self.steps_y)
+            scat = plt.scatter(self.steps_x, self.steps_y)
+
         self.draw()
+        if scat is not None:
+            scat.remove()
 
 
 class FunctionOptimizer(QDialog):
-    def __init__(self, parser=None, parent=None):
+    def __init__(self, parser=None, msd=None, parent=None):
         super(FunctionOptimizer, self).__init__(parent)
         self.setWindowTitle("Metody optymalizacji")
         QApplication.setStyle(QStyleFactory.create('windows'))
 
         self.parser = parser
+        self.msd = msd
 
         self.create_parser_box()
         self.create_plot_box()
@@ -186,6 +201,8 @@ class FunctionOptimizer(QDialog):
         if data is not None:
             self.parser.set_mesh_ranges(data[0], data[1])
 
+        self.msd.compute()
+        self.fig_canvas.set_points(self.msd.get_steps())
         self.fig_canvas.set_data(self.parser.create_mesh())
         self.update_figure()
 

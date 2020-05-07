@@ -11,9 +11,16 @@ parser = FunctionHandler()
 parser.parse_function(func)
 parser.set_mesh_ranges((-10.0, 10.0), (-5.0, 5.0))
 
+gss = GoldenSectionSearch()
+gss.set_parameters(-100, 100, 0.001)
+
+msd = SteepestDescentMethod(gss, parser)
+msd.set_function_handler(parser)
+msd.set_parameters((2, 2), 0.1)
+
 if __name__ == '__main__':
     app = QApplication([])
-    gui = FunctionOptimizer(parser=parser)
+    gui = FunctionOptimizer(parser=parser, msd=msd)
 
     gui.text_edit.setPlainText(func)
     gui.fig_canvas.set_data(parser.create_mesh())
