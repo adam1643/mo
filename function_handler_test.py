@@ -18,3 +18,10 @@ class TestFunctionHandler(unittest.TestCase):
 
         fh.parse_function("2x+sin(x)*x^2+3y")
         self.assertAlmostEqual(fh.function((3, 4)), 2*3 + sin(3)*3**2 + 3*4)
+
+    def test_values(self):
+        fh = FunctionHandler()
+
+        fh.parse_function("sin(x) * x^2")
+        self.assertAlmostEqual(fh.function((1, 0)), sin(1))
+
