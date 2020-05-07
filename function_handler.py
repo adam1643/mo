@@ -8,6 +8,7 @@ import numpy as np
 class FunctionHandler:
     def __init__(self):
         self.direction = None
+        self.offset = (0, 0)
 
         self.f = None
 
@@ -29,15 +30,19 @@ class FunctionHandler:
 
     def set_direction(self, vector):
         v1, v2 = vector[0], vector[1]
-        self.direction = v1 / math.sqrt(v1 ** 2 + v2 ** 2), v2 / math.sqrt(v1 ** 2 + v2 ** 2)
+        self.direction = v1, v2
+        # self.direction = v1 / math.sqrt(v1 ** 2 + v2 ** 2), v2 / math.sqrt(v1 ** 2 + v2 ** 2)
+
+    def set_offset(self, offset):
+        self.offset = offset
 
     def function(self, value):
         x, y = value[0], value[1]
         return eval(self.f)
 
     def directional_function(self, value):
-        x1 = value
-        x2 = x1 * self.direction[0] / self.direction[1]
+        x1 = self.offset[0] + value * self.direction[0]
+        x2 = self.offset[1] + value * self.direction[1]
         return self.function((x1, x2))
 
     def set_mesh_ranges(self, x1_range, x2_range):
