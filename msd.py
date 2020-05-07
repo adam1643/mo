@@ -51,34 +51,22 @@ class SteepestDescentMethod:
 
     def compute(self):
         """Main computing method"""
-
         x = self.start_value
         prev_x = None
 
-        # g = self.get_gradient(x)
-        # anty_g = -g[0], -g[1]
-        # print(anty_g)
-        # self.f_handler.set_direction(anty_g)
-        # self.f_handler.set_offset(x)
-        # minimum = self.dir_minimizer.get_extremum(self.f_handler.directional_function)
-        # new_x = (x[0] + minimum*anty_g[0], x[1] + minimum*anty_g[1])
-        # self.steps.append(new_x)
-        # print("1st iter", new_x)
-
         while self.get_distance(x, prev_x) > self.precision:
             prev_x = x
-            g = self.get_gradient(x)
-            anty_g = -g[0], -g[1]
-            # print(anty_g)
+            gradient = self.get_gradient(x)
+            anty_g = -gradient[0], -gradient[1]
+
             self.f_handler.set_direction(anty_g)
             self.f_handler.set_offset(x)
+
             minimum = self.dir_minimizer.get_extremum(self.f_handler.directional_function)
             x = (x[0] + minimum*anty_g[0], x[1] + minimum*anty_g[1])
             self.steps.append(x)
 
             print("X", x)
-
-        print(self.steps)
 
 
 '''
