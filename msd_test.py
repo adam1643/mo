@@ -12,7 +12,7 @@ class TestFunctionHandler(unittest.TestCase):
         msd = SteepestDescentMethod(None, fh)
         msd.set_function_handler(fh)
 
-        gx, gy = msd.get_gradient((2,2))
+        gx, gy = msd.get_gradient((2, 2))
         self.assertAlmostEqual(gx, 4, 3)
         self.assertAlmostEqual(gy, 4, 3)
 

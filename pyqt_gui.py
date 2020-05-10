@@ -14,6 +14,7 @@ class Plot3D(FigureCanvas):
 
         self.plot_type = 'contour'
         self.levels = 20
+        self.isolines = []
 
         self.steps_x, self.steps_y = None, None
 
@@ -30,6 +31,8 @@ class Plot3D(FigureCanvas):
         self.steps_x = [p[0] for p in points]
         self.steps_y = [p[1] for p in points]
 
+    def set_isolines(self, isolines):
+        self.isolines = isolines
 
     def set_plot_type(self, plot_type):
         if plot_type is True:
@@ -47,14 +50,20 @@ class Plot3D(FigureCanvas):
 
         if self.plot_type == 'contourf':
             cp = plt.contourf(self.x, self.y, self.z, levels=self.levels)
-            # plt.colorbar(cp)
+            plt.colorbar(cp)
         else:
-            cp = plt.contour(self.x, self.y, self.z, colors='black', levels=self.levels, linewidths=0.1)
+            # cp = plt.contour(self.x, self.y, self.z, colors='black', levels=self.levels, linewidths=0.1)
+            # cp = plt.contour(self.x, self.y, self.z, colors='black', levels=[i for i in range(2000)], linewidths=0.1)
+            if len(self.isolines) > 0:
+                cp = plt.contour(self.x, self.y, self.z, colors='black', levels=self.isolines, linewidths=0.1)
+            else:
+                cp = plt.contour(self.x, self.y, self.z, colors='black', levels=self.levels, linewidths=0.1)
 
         scat = None
         if self.steps_x is not None and self.steps_y is not None:
             print(self.steps_x, self.steps_y)
-            scat = plt.scatter(self.steps_x, self.steps_y)
+            scat = plt.scatter(self.steps_x, self.steps_y, s=[2 for _ in range(len(self.steps_y))])
+            plt.plot(self.steps_x, self.steps_y, linewidth=1)
 
         self.draw()
         if scat is not None:
@@ -132,7 +141,7 @@ class FunctionOptimizer(QDialog):
 
         levels_slider = QSlider(Qt.Horizontal)
         levels_slider.setValue(20)
-        levels_slider.setRange(5, 30)
+        levels_slider.setRange(5, 50)
         levels_slider.valueChanged.connect(lambda x: self.fig_canvas.set_levels(x))
 
         type_group_layout = QHBoxLayout()
@@ -203,6 +212,9 @@ class FunctionOptimizer(QDialog):
 
         self.msd.compute()
         self.fig_canvas.set_points(self.msd.get_steps())
+
+        self.fig_canvas.set_isolines(self.msd.get_isolines())
+
         self.fig_canvas.set_data(self.parser.create_mesh())
         self.update_figure()
 

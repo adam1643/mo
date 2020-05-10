@@ -34,10 +34,18 @@ class SteepestDescentMethod:
         """Gets list of arguments values of consecutive algorithm iterations"""
         return self.steps.copy()
 
+    def get_isolines(self):
+        iso = []
+        for s in self.steps:
+            iso.append(self.f(s))
+
+        iso.sort()
+        return iso
+
     def get_gradient(self, x):
         """Gets gradient from argument tuple x [x1, x2]"""
         val = self.f(x)
-        h = 0.000000001
+        h = 0.000000000001
         xh = (x[0] + h, x[1])
         yh = (x[0], x[1] + h)
 
