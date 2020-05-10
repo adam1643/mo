@@ -99,21 +99,21 @@ class FunctionOptimizer(QDialog):
         button.clicked.connect(lambda: self.update_function())
 
         start_point_layout = QGridLayout()
-        x1, x2 = QLineEdit(), QLineEdit()
-        start_point_layout.addWidget(x1, 0, 0)
-        start_point_layout.addWidget(x2, 0, 1)
+        self.x1, self.x2 = QLineEdit('-0.5'), QLineEdit('0.5')
+        start_point_layout.addWidget(self.x1, 0, 0)
+        start_point_layout.addWidget(self.x2, 0, 1)
         start_point_box = QGroupBox("Punkt startowy")
         start_point_box.setLayout(start_point_layout)
 
         main_precision_layout = QGridLayout()
-        p1 = QLineEdit()
-        main_precision_layout.addWidget(p1)
+        self.p1 = QLineEdit('0.00001')
+        main_precision_layout.addWidget(self.p1)
         main_precision_box = QGroupBox("Precyzja")
         main_precision_box.setLayout(main_precision_layout)
 
         dir_precision_layout = QGridLayout()
-        p2 = QLineEdit()
-        dir_precision_layout.addWidget(p2)
+        self.p2 = QLineEdit('0.000001')
+        dir_precision_layout.addWidget(self.p2)
         dir_precision_box = QGroupBox("Pr.kier.")
         dir_precision_box.setLayout(dir_precision_layout)
 
@@ -210,9 +210,10 @@ class FunctionOptimizer(QDialog):
         if data is not None:
             self.parser.set_mesh_ranges(data[0], data[1])
 
+        self.msd.set_parameters((float(self.x1.text()), float(self.x2.text())), float(self.p1.text()))
+
         self.msd.compute()
         self.fig_canvas.set_points(self.msd.get_steps())
-
         self.fig_canvas.set_isolines(self.msd.get_isolines())
 
         self.fig_canvas.set_data(self.parser.create_mesh())
