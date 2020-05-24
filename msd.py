@@ -37,10 +37,15 @@ class SteepestDescentMethod:
     def get_isolines(self):
         iso = []
         for s in self.steps:
+            if self.f(s) in iso:
+                continue
             iso.append(self.f(s))
 
         iso.sort()
         return iso
+
+    def get_results(self):
+        return len(self.steps), self.steps[-1], self.f(self.steps[-1])
 
     def get_gradient(self, x):
         """Gets gradient from argument tuple x [x1, x2]"""

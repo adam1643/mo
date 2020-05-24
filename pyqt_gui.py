@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QDialog, QGridLayout, QCheckBox, QStyleFactory, QTextEdit, QPushButton, \
     QGroupBox, QVBoxLayout, QHBoxLayout, QRadioButton, QLineEdit, QLabel, QSlider
+
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 from PyQt5.QtCore import Qt
@@ -34,11 +35,16 @@ class Plot3D(FigureCanvas):
     def set_isolines(self, isolines):
         self.isolines = isolines
 
-    def set_plot_type(self, plot_type):
-        if plot_type is True:
-            self.plot_type = 'contourf'
-        else:
+    def set_plot_type(self, toggled, plot_type):
+        if not toggled:
+            return
+
+        if plot_type == 1:
             self.plot_type = 'contour'
+        elif plot_type == 2:
+            self.plot_type = 'contourf'
+        elif plot_type == 3:
+            self.plot_type = 'isolines'
 
         self.update_canvas()
 
@@ -51,10 +57,13 @@ class Plot3D(FigureCanvas):
         if self.plot_type == 'contourf':
             cp = plt.contourf(self.x, self.y, self.z, levels=self.levels)
             plt.colorbar(cp)
-        else:
+        elif self.plot_type == 'contour':
+            cp = plt.contour(self.x, self.y, self.z, colors='black', levels=self.levels, linewidths=0.1)
+        elif self.plot_type == 'isolines':
             # cp = plt.contour(self.x, self.y, self.z, colors='black', levels=self.levels, linewidths=0.1)
             # cp = plt.contour(self.x, self.y, self.z, colors='black', levels=[i for i in range(2000)], linewidths=0.1)
             if len(self.isolines) > 0:
+                print("Iso", self.isolines)
                 cp = plt.contour(self.x, self.y, self.z, colors='black', levels=self.isolines, linewidths=0.1)
             else:
                 cp = plt.contour(self.x, self.y, self.z, colors='black', levels=self.levels, linewidths=0.1)
@@ -81,14 +90,16 @@ class FunctionOptimizer(QDialog):
 
         self.create_parser_box()
         self.create_plot_box()
+        self.create_function_info()
 
         main_layout = QGridLayout()
         fig = plt.figure(dpi=140)
 
         self.fig_canvas = Plot3D(fig)
-        main_layout.addWidget(self.fig_canvas, 0, 0, 2, 1)
+        main_layout.addWidget(self.fig_canvas, 0, 0, 3, 1)
         main_layout.addWidget(self.parser_group_box, 0, 1)
         main_layout.addWidget(self.plot_group_box, 1, 1)
+        main_layout.addWidget(self.info_group_box, 2, 1)
         self.setLayout(main_layout)
 
     def create_parser_box(self):
@@ -106,7 +117,7 @@ class FunctionOptimizer(QDialog):
         start_point_box.setLayout(start_point_layout)
 
         main_precision_layout = QGridLayout()
-        self.p1 = QLineEdit('0.00001')
+        self.p1 = QLineEdit('0.001')
         main_precision_layout.addWidget(self.p1)
         main_precision_box = QGroupBox("Precyzja")
         main_precision_box.setLayout(main_precision_layout)
@@ -134,10 +145,13 @@ class FunctionOptimizer(QDialog):
         self.plot_group_box.setContentsMargins(2, 18, 2, 2)
 
         # set type of plot
-        checkbox_iso = QRadioButton("&Izolinie")
+        checkbox_iso = QRadioButton("&Linie")
         checkbox_iso.setChecked(True)
         checkbox_color = QRadioButton("&Kolory")
-        checkbox_color.toggled.connect(lambda x: self.fig_canvas.set_plot_type(x))
+        checkbox_3 = QRadioButton('&Izolinie')
+        checkbox_iso.toggled.connect(lambda x: self.fig_canvas.set_plot_type(x, 1))
+        checkbox_color.toggled.connect(lambda x: self.fig_canvas.set_plot_type(x, 2))
+        checkbox_3.toggled.connect(lambda x: self.fig_canvas.set_plot_type(x, 3))
 
         levels_slider = QSlider(Qt.Horizontal)
         levels_slider.setValue(20)
@@ -147,6 +161,7 @@ class FunctionOptimizer(QDialog):
         type_group_layout = QHBoxLayout()
         type_group_layout.addWidget(checkbox_iso)
         type_group_layout.addWidget(checkbox_color)
+        type_group_layout.addWidget(checkbox_3)
         type_group_layout.addWidget(levels_slider)
 
         type_group = QGroupBox('Rodzaj wykresu')
@@ -192,6 +207,20 @@ class FunctionOptimizer(QDialog):
 
         self.plot_group_box.setLayout(grid_layout)
 
+    def create_function_info(self):
+        self.info_group_box = QGroupBox("Wyniki")
+
+        self.no_steps = QLabel('Liczba krokow: ...')
+        self.found_arg = QLabel('Minimum w: (..., ...)')
+        self.found_val = QLabel('Minimum: ...')
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.no_steps)
+        layout.addWidget(self.found_arg)
+        layout.addWidget(self.found_val)
+
+        self.info_group_box.setLayout(layout)
+
     def update_range(self):
         try:
             x1 = (float(self.x1_start_range.text()), float(self.x1_end_range.text()))
@@ -218,6 +247,11 @@ class FunctionOptimizer(QDialog):
 
         self.fig_canvas.set_data(self.parser.create_mesh())
         self.update_figure()
+
+        n, arg, val = self.msd.get_results()
+        self.no_steps.setText(f'Liczba krokow: <b>{n-1}</b>')
+        self.found_arg.setText(f'Minimum w: <b>({round(arg[0], 5)}, {round(arg[1], 5)})</b>')
+        self.found_val.setText(f'Minimum: <b>{round(val, 5)}</b>')
 
     def update_figure(self):
         self.fig_canvas.update_canvas()
