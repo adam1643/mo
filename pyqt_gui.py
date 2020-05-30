@@ -125,13 +125,14 @@ class FunctionOptimizer(QDialog):
         dir_precision_layout = QGridLayout()
         self.p2 = QLineEdit('0.000001')
         dir_precision_layout.addWidget(self.p2)
-        dir_precision_box = QGroupBox("Pr.kier.")
+        dir_precision_box = QGroupBox("Prec. kier.")
         dir_precision_box.setLayout(dir_precision_layout)
 
-        algorithm_details = QHBoxLayout()
-        algorithm_details.addWidget(start_point_box)
-        algorithm_details.addWidget(main_precision_box)
-        algorithm_details.addWidget(dir_precision_box)
+        algorithm_details = QGridLayout()
+
+        algorithm_details.addWidget(start_point_box, 0, 0, 1, 2)
+        algorithm_details.addWidget(main_precision_box, 1, 0)
+        algorithm_details.addWidget(dir_precision_box, 1, 1)
 
         layout = QVBoxLayout()
         layout.addWidget(self.text_edit)
@@ -210,9 +211,9 @@ class FunctionOptimizer(QDialog):
     def create_function_info(self):
         self.info_group_box = QGroupBox("Wyniki")
 
-        self.no_steps = QLabel('Liczba krokow: ...')
+        self.no_steps = QLabel('Liczba kroków: ...')
         self.found_arg = QLabel('Minimum w: (..., ...)')
-        self.found_val = QLabel('Minimum: ...')
+        self.found_val = QLabel('Wartość minimum: ...')
 
         layout = QVBoxLayout()
         layout.addWidget(self.no_steps)
